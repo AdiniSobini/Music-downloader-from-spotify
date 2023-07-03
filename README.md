@@ -1,16 +1,34 @@
-# Music-downloader-from-spotify
 
-All You need will be installed through this code. 
-
-Ok the all You need to know is how distro You have, if you have arch (or distro base on arch) 
-You mast choose Music_downloader_Arch_Linux.sh but if You have debian or distro base on debian
-You have to download Music_downloader_Debian.sh.
+# Music-downloader-from-spotify 🎧
 
 
-How start 
+```bash 
+bash (Music_downloader_Debian.sh
+```
 
-open Your console and write 
 
-bash (Music_downloader_Debian.sh or Music_downloader_Arch_Linux.sh)
+Or if you use Arch Linux 
 
-and after code will install missing content You need paste Your Spotify playlist link
+
+
+```bash 
+bash Music_downloader_Arch_Linux.sh
+```
+
+
+
+
+
+## Important
+
+If code doesn't ran you need instalki ffmpeg in Debian you need do:
+
+```bash 
+sudo apt-get install ffmpeg
+```
+
+In Arch:
+
+```bash 
+sudo pacman -S ffmpeg
+```
