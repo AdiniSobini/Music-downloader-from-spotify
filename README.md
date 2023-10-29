@@ -21,7 +21,7 @@ bash Music_downloader_Arch_Linux.sh
 
 ## Important
 
-If code doesn't ran you need instalki ffmpeg in Debian you need do:
+If code doesn't ran you need install ffmpeg in Debian you need do:
 
 ```bash 
 sudo apt-get install ffmpeg
