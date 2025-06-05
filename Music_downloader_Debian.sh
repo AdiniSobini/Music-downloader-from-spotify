@@ -1,37 +1,54 @@
 #!/bin/bash
 
-
 export PYTHONUNBUFFERED=1
 
-cd ~ && mkdir Spotify_Music
-cd Spotify_Music
+# Katalog na pobrane utwory
+MUSIC_DIR=~/Spotify_Music
+mkdir -p "$MUSIC_DIR"
+cd "$MUSIC_DIR" || exit 1
 
-PACKAGE_NAME="python3"
-PACKAGE_NAME3="ffmpeg"
+# Wymagane pakiety Debiana
+DEB_PACKAGES=("python3" "python3-venv" "python3-pip" "ffmpeg")
 
-if dpkg -s $PACKAGE_NAME > /dev/null 2>&1 ; then
-    echo "The $PACKAGE_NAME package is already installed"
-else
-    echo "The $PACKAGE_NAME package is not installed. Install..."
-    sudo apt-get update && sudo apt-get install -y $PACKAGE_NAME
+# Instalacja brakujących pakietów
+for pkg in "${DEB_PACKAGES[@]}"; do
+    if ! dpkg -s "$pkg" > /dev/null 2>&1; then
+        echo "Pakiet $pkg nie jest zainstalowany. Instaluję..."
+        sudo apt-get update && sudo apt-get install -y "$pkg"
+    else
+        echo "Pakiet $pkg jest już zainstalowany."
+    fi
+done
+
+# Tworzenie i aktywacja środowiska virtualenv (w katalogu skryptu)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
+
+if [ ! -d "venv" ]; then
+    echo "Tworzę środowisko virtualenv..."
+    python3 -m venv venv
 fi
 
-if pip3 list | grep -q spotdl ; then
-    echo "spotdl is already installed"
+source venv/bin/activate
+
+# Instalacja spotdl wewnątrz venv
+if ! pip list | grep -q spotdl; then
+    echo "Instaluję spotdl..."
+    pip install --upgrade pip
+    pip install spotdl
 else
-    echo "Ok You don't have spotdl, but don't worry I will install"
-    python3 -m pip install spotdl
+    echo "spotdl już jest zainstalowany w virtualenv."
 fi
 
-if dpkg -s $PACKAGE_NAME3 > /dev/null 2>&1 ; then
-    echo "The $PACKAGE_NAME3 package is already installed"
-else
-    echo "The $PACKAGE_NAME3 package is not installed. Install..."
-    sudo apt-get update && sudo apt-get install -y $PACKAGE_NAME3
+# Pobieranie muzyki
+echo "Wklej link z Spotify (pliki trafią do: $MUSIC_DIR):"
+read -r link
+
+if [ -z "$link" ]; then
+    echo "Nie podano linku. Kończę."
+    exit 1
 fi
 
-echo "Ok, you can paste your link from Spotify now (Your music will be in /home/user/Spotify_Music):"
-read link
-python3 -m spotdl $link
-sleep 1
-echo "Ok, everything is ready. Enjoy your music! 😁"
+spotdl "$link"
+
+echo "✅ Gotowe! Sprawdź folder: $MUSIC_DIR"
